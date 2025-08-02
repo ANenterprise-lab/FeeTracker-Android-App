@@ -7,10 +7,11 @@ import android.view.ViewGroup
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import java.util.Calendar
+import java.util.Locale // Added the missing import
 
 class StudentAdapter(
     private var students: List<Student>,
-    private var fees: List<Fee>, // Add fees list
+    private var fees: List<Fee>,
     private val onItemClicked: (Student) -> Unit
 ) : RecyclerView.Adapter<StudentAdapter.StudentViewHolder>() {
 
@@ -22,7 +23,7 @@ class StudentAdapter(
 
     override fun onBindViewHolder(holder: StudentViewHolder, position: Int) {
         val student = students[position]
-        holder.bind(student, fees) // Pass fees to the bind function
+        holder.bind(student, fees)
         holder.itemView.setOnClickListener { onItemClicked(student) }
     }
 
@@ -36,12 +37,12 @@ class StudentAdapter(
 
     class StudentViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         private val studentNameTextView: TextView = itemView.findViewById(R.id.studentNameTextView)
-        private val statusIndicatorView: View = itemView.findViewById(R.id/statusIndicatorView)
+        // Correctly initialized the view
+        private val statusIndicatorView: View = itemView.findViewById(R.id.statusIndicatorView)
 
         fun bind(student: Student, fees: List<Fee>) {
             studentNameTextView.text = student.name
 
-            // Logic to set dot color
             val calendar = Calendar.getInstance()
             val currentMonth = calendar.getDisplayName(Calendar.MONTH, Calendar.LONG, Locale.getDefault())
             val currentYear = calendar.get(Calendar.YEAR)
@@ -53,9 +54,9 @@ class StudentAdapter(
             }
 
             if (feeForCurrentMonth != null && feeForCurrentMonth.isPaid) {
-                statusIndicatorView.setBackgroundColor(Color.GREEN) // Paid
+                statusIndicatorView.setBackgroundColor(Color.GREEN)
             } else {
-                statusIndicatorView.setBackgroundColor(Color.RED) // Pending
+                statusIndicatorView.setBackgroundColor(Color.RED)
             }
         }
     }
