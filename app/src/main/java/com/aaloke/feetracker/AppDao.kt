@@ -25,4 +25,7 @@ interface AppDao {
 
     @Query("SELECT * FROM fees")
     fun getAllFees(): Flow<List<Fee>> // <-- Add this new function
+
+    @Delete
+    suspend fun deleteStudent(student: Student) // <-- ADD THIS FUNCTION
 }

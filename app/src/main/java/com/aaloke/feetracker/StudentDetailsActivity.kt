@@ -10,6 +10,7 @@ import android.widget.FrameLayout
 import android.widget.ImageButton
 import android.widget.LinearLayout
 import android.widget.TextView
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.lifecycleScope
 import kotlinx.coroutines.Dispatchers
@@ -28,6 +29,7 @@ class StudentDetailsActivity : AppCompatActivity() {
 
     private lateinit var feeHistoryLayout: LinearLayout
     private lateinit var addFeeButton: Button
+    private lateinit var removeStudentButton: Button
     private lateinit var studentNameTextView: TextView
     private lateinit var editStudentNameButton: ImageButton
 
@@ -46,6 +48,7 @@ class StudentDetailsActivity : AppCompatActivity() {
         addFeeButton = findViewById(R.id.addFeeButton)
         studentNameTextView = findViewById(R.id.detailsStudentNameTextView)
         editStudentNameButton = findViewById(R.id.editStudentNameButton)
+        removeStudentButton = findViewById(R.id.removeStudentButton)
 
         // --- Fetch Data and Set Up UI ---
         lifecycleScope.launch {
@@ -69,6 +72,9 @@ class StudentDetailsActivity : AppCompatActivity() {
 
         editStudentNameButton.setOnClickListener {
             showEditStudentInfoDialog()
+        }
+        removeStudentButton.setOnClickListener {
+            showRemoveStudentConfirmation()
         }
     }
 
@@ -181,5 +187,22 @@ class StudentDetailsActivity : AppCompatActivity() {
             if (lastMonthIndex == 11) "January" to lastPaidFee.year + 1
             else months[lastMonthIndex + 1] to lastPaidFee.year
         }
+    }
+
+    private fun showRemoveStudentConfirmation() {
+        val student = currentStudent ?: return
+
+        AlertDialog.Builder(this)
+            .setTitle("Remove Student")
+            .setMessage("Are you sure you want to remove ${student.name}? This will also delete all associated fee history.")
+            .setPositiveButton("Remove") { _, _ ->
+                lifecycleScope.launch(Dispatchers.IO) {
+                    db.appDao().deleteStudent(student) // You will need to add this method to AppDao
+                }
+                Toast.makeText(this, "${student.name} has been removed.", Toast.LENGTH_SHORT).show()
+                finish() // Close the details activity
+            }
+            .setNegativeButton("Cancel", null)
+            .show()
     }
 }

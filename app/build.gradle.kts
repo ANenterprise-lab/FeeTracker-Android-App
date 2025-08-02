@@ -1,6 +1,5 @@
-// The old plugins block at the top should be completely removed.
-// Apply the correct plugins using the `alias` from your libs.versions.toml file.
 plugins {
+    // This block was missing. It tells Gradle this is an Android App module.
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
     alias(libs.plugins.ksp)
@@ -37,7 +36,7 @@ android {
         jvmTarget = "1.8"
     }
     buildFeatures {
-        viewBinding = true // Recommended for modern view access
+        viewBinding = true
     }
     packaging {
         resources.excludes.add("META-INF/DEPENDENCIES")
@@ -46,34 +45,34 @@ android {
 
 dependencies {
     // This adds the desugaring library
-    coreLibraryDesugaring(libs.desugar.jdk.libs)
+    coreLibraryDesugaring("com.android.tools:desugar_jdk_libs:2.0.4") // Using direct dependency for clarity
 
     // Core Android Libraries
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.appcompat)
     implementation(libs.material)
     implementation(libs.androidx.constraintlayout)
-    implementation(libs.androidx.activity.ktx) // Make sure this is present
+    implementation(libs.androidx.activity) // Corrected alias
 
     // Room Database
-    implementation(libs.androidx.room.runtime)
-    implementation(libs.androidx.room.ktx)
-    ksp(libs.androidx.room.compiler)
+    implementation("androidx.room:room-runtime:2.6.1")
+    implementation("androidx.room:room-ktx:2.6.1")
+    ksp("androidx.room:room-compiler:2.6.1")
 
     // Lifecycle
-    implementation(libs.androidx.lifecycle.viewmodel.ktx)
-    implementation(libs.androidx.lifecycle.livedata.ktx)
+    implementation("androidx.lifecycle:lifecycle-viewmodel-ktx:2.8.1")
+    implementation("androidx.lifecycle:lifecycle-livedata-ktx:2.8.1")
 
     // Calendar View Library
-    implementation(libs.calendar.view)
+    implementation("com.kizitonwose.calendar:view:2.5.1")
 
     // WorkManager for Notifications
-    implementation(libs.androidx.work.runtime.ktx)
+    implementation("androidx.work:work-runtime-ktx:2.9.0")
 
     // Google Sign-In and API services
-    implementation(libs.play.services.auth)
-    implementation(libs.google.api.client.android)
-    implementation(libs.google.api.services.sheets)
+    implementation("com.google.android.gms:play-services-auth:21.2.0")
+    implementation("com.google.api-client:google-api-client-android:2.2.0")
+    implementation("com.google.apis:google-api-services-sheets:v4-rev20220927-2.0.0")
 
     // Testing
     testImplementation(libs.junit)
