@@ -2,42 +2,46 @@ package com.aaloke.feetracker
 
 import android.app.NotificationChannel
 import android.app.NotificationManager
+import android.app.PendingIntent
 import android.content.Context
+import android.content.Intent
 import android.os.Build
 import androidx.core.app.NotificationCompat
 import androidx.work.CoroutineWorker
 import androidx.work.WorkerParameters
 import kotlinx.coroutines.flow.first
-import java.time.LocalDate
+import java.util.Calendar
+import java.util.Locale
 
 class FeeReminderWorker(appContext: Context, workerParams: WorkerParameters) : CoroutineWorker(appContext, workerParams) {
     override suspend fun doWork(): Result {
+        val calendar = Calendar.getInstance()
+        // Only run if it's after the 8th of the month
+        if (calendar.get(Calendar.DAY_OF_MONTH) <= 8) return Result.success()
+
         val db = AppDatabase.getDatabase(applicationContext)
-        val today = LocalDate.now()
-
-        // Only run if it's after the 10th of the month
-        if (today.dayOfMonth <= 10) return Result.success()
-
-        val currentMonthName = today.month.name.lowercase().capitalize()
         val students = db.appDao().getAllStudents().first()
         val allFees = db.appDao().getAllFees().first()
+
+        val currentMonthName = calendar.getDisplayName(Calendar.MONTH, Calendar.LONG, Locale.getDefault())
+        val currentYear = calendar.get(Calendar.YEAR)
 
         val overdueStudents = students.filter { student ->
             allFees.none { fee ->
                 fee.studentId == student.id &&
                         fee.month.equals(currentMonthName, ignoreCase = true) &&
-                        fee.year == today.year
+                        fee.year == currentYear
             }
         }
 
         if (overdueStudents.isNotEmpty()) {
-            sendNotification(overdueStudents.joinToString(", ") { it.name })
+            sendNotification(overdueStudents.size)
         }
 
         return Result.success()
     }
 
-    private fun sendNotification(overdueNames: String) {
+    private fun sendNotification(overdueCount: Int) {
         val notificationManager = applicationContext.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
         val channelId = "fee_reminder_channel"
 
@@ -46,10 +50,16 @@ class FeeReminderWorker(appContext: Context, workerParams: WorkerParameters) : C
             notificationManager.createNotificationChannel(channel)
         }
 
+        // Intent to open NotificationActivity
+        val intent = Intent(applicationContext, NotificationActivity::class.java)
+        val pendingIntent = PendingIntent.getActivity(applicationContext, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE)
+
         val notification = NotificationCompat.Builder(applicationContext, channelId)
-            .setContentTitle("Overdue Student Fees")
-            .setContentText("Fees may be overdue for: $overdueNames")
-            .setSmallIcon(android.R.drawable.ic_dialog_alert)
+            .setContentTitle("Pending Fee Reminders")
+            .setContentText("$overdueCount student(s) have pending fees for this month.")
+            .setSmallIcon(android.R.drawable.ic_dialog_info)
+            .setContentIntent(pendingIntent) // Set the intent
+            .setAutoCancel(true) // Dismiss notification on tap
             .build()
 
         notificationManager.notify(1, notification)

@@ -6,19 +6,11 @@
     android:gravity="center_vertical"
     android:padding="16dp">
 
-    <TextView
-        android:id="@+id/serialNumberTextView"
-        android:layout_width="40dp"
-        android:layout_height="wrap_content"
-        android:textSize="18sp"
-        android:textStyle="bold"
-        android:text="1." />
-
     <View
-        android:id="@+id/colorIndicatorView"
+        android:id="@+id/statusIndicatorView"
         android:layout_width="12dp"
         android:layout_height="12dp"
-        android:layout_marginEnd="12dp"
+        android:layout_marginEnd="16dp"
         android:background="@android:color/darker_gray" />
 
     <TextView
