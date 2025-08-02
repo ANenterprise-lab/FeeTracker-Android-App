@@ -55,6 +55,13 @@ class MainActivity : AppCompatActivity() {
         findViewById<FloatingActionButton>(R.id.addStudentFab).setOnClickListener {
             showAddStudentDialog()
         }
+        findViewById<ImageButton>(R.id.openCalendarButton).setOnClickListener {
+            val intent = Intent(this, CalendarActivity::class.java)
+            startActivity(intent)
+        }
+        findViewById<FloatingActionButton>(R.id.addStudentFab).setOnClickListener {
+            showAddStudentDialog()
+        }
     }
 
     private fun showAddStudentDialog() {
@@ -115,5 +122,30 @@ class MainActivity : AppCompatActivity() {
         val recyclerView = findViewById<RecyclerView>(R.id.studentsRecyclerView)
         recyclerView.layoutManager = LinearLayoutManager(this)
         recyclerView.adapter = studentAdapter
+    }
+    private fun showAddStudentDialog() {
+        val builder = AlertDialog.Builder(this)
+        builder.setTitle("Add New Student")
+
+        val input = EditText(this)
+        input.hint = "Enter student name"
+        input.inputType = InputType.TYPE_CLASS_TEXT
+        builder.setView(input)
+
+        builder.setPositiveButton("Add") { dialog, _ ->
+            val studentName = input.text.toString().trim()
+            if (studentName.isNotEmpty()) {
+                lifecycleScope.launch(Dispatchers.IO) {
+                    val newStudent = Student(
+                        name = studentName,
+                        color = ColorUtils.getNextColor()
+                    )
+                    db.appDao().insertStudent(newStudent)
+                }
+                Toast.makeText(this, "$studentName added.", Toast.LENGTH_SHORT).show()
+            }
+        }
+        builder.setNegativeButton("Cancel") { dialog, _ -> dialog.cancel() }
+        builder.show()
     }
 }
