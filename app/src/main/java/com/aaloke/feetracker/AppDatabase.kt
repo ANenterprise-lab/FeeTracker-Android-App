@@ -5,9 +5,8 @@ import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
 
-@Database(entities = [Student::class, Fee::class], version = 4) // Version is now 4
+@Database(entities = [Student::class, Fee::class], version = 2, exportSchema = false) // Note: version is now 2
 abstract class AppDatabase : RoomDatabase() {
-
     abstract fun appDao(): AppDao
 
     companion object {
@@ -21,7 +20,7 @@ abstract class AppDatabase : RoomDatabase() {
                     AppDatabase::class.java,
                     "fee_tracker_database"
                 )
-                    // This line is essential to handle the database change
+                    // This handles the upgrade by deleting old data
                     .fallbackToDestructiveMigration()
                     .build()
                 INSTANCE = instance

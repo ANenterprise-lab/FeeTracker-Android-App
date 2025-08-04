@@ -1,63 +1,58 @@
 package com.aaloke.feetracker
 
-import android.graphics.Color
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Button
 import android.widget.TextView
+import androidx.recyclerview.widget.DiffUtil
+import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
-import java.util.Calendar
-import java.util.Locale // Added the missing import
 
 class StudentAdapter(
-    private var students: List<Student>,
-    private var fees: List<Fee>,
-    private val onItemClicked: (Student) -> Unit
-) : RecyclerView.Adapter<StudentAdapter.StudentViewHolder>() {
+    private val onPayFeeClicked: (Student) -> Unit,
+    private val onDeleteClicked: (Student) -> Unit
+) : ListAdapter<Student, StudentAdapter.StudentViewHolder>(StudentDiffCallback()) {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): StudentViewHolder {
-        val view = LayoutInflater.from(parent.context)
-            .inflate(R.layout.student_item_layout, parent, false)
+        val view = LayoutInflater.from(parent.context).inflate(R.layout.item_student, parent, false)
         return StudentViewHolder(view)
     }
 
     override fun onBindViewHolder(holder: StudentViewHolder, position: Int) {
-        val student = students[position]
-        holder.bind(student, fees)
-        holder.itemView.setOnClickListener { onItemClicked(student) }
-    }
-
-    override fun getItemCount() = students.size
-
-    fun updateData(newStudents: List<Student>, newFees: List<Fee>) {
-        students = newStudents
-        fees = newFees
-        notifyDataSetChanged()
+        val student = getItem(position)
+        holder.bind(student, onPayFeeClicked, onDeleteClicked)
     }
 
     class StudentViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
-        private val studentNameTextView: TextView = itemView.findViewById(R.id.studentNameTextView)
-        // Correctly initialized the view
-        private val statusIndicatorView: View = itemView.findViewById(R.id.statusIndicatorView)
+        private val nameTextView: TextView = itemView.findViewById(R.id.studentNameTextView)
+        private val classTextView: TextView = itemView.findViewById(R.id.classNameTextView)
+        private val phoneTextView: TextView = itemView.findViewById(R.id.phoneNumberTextView)
+        private val statusTextView: TextView = itemView.findViewById(R.id.feeStatusTextView)
+        private val payFeeButton: Button = itemView.findViewById(R.id.payFeeButton)
+        private val deleteButton: Button = itemView.findViewById(R.id.deleteButton)
 
-        fun bind(student: Student, fees: List<Fee>) {
-            studentNameTextView.text = student.name
+        fun bind(student: Student, onPayFeeClicked: (Student) -> Unit, onDeleteClicked: (Student) -> Unit) {
+            nameTextView.text = student.name
+            classTextView.text = "Class: ${student.className}"
+            phoneTextView.text = "Phone: ${student.phoneNumber ?: "N/A"}" // Show N/A if no number
+            statusTextView.text = "Status: ${student.feeStatus}"
 
-            val calendar = Calendar.getInstance()
-            val currentMonth = calendar.getDisplayName(Calendar.MONTH, Calendar.LONG, Locale.getDefault())
-            val currentYear = calendar.get(Calendar.YEAR)
+            // Show "Pay Fee" button only if status is "Pending"
+            payFeeButton.visibility = if (student.feeStatus == "Pending") View.VISIBLE else View.GONE
+            payFeeButton.setOnClickListener { onPayFeeClicked(student) }
 
-            val feeForCurrentMonth = fees.find {
-                it.studentId == student.id &&
-                        it.month.equals(currentMonth, ignoreCase = true) &&
-                        it.year == currentYear
-            }
-
-            if (feeForCurrentMonth != null && feeForCurrentMonth.isPaid) {
-                statusIndicatorView.setBackgroundColor(Color.GREEN)
-            } else {
-                statusIndicatorView.setBackgroundColor(Color.RED)
-            }
+            deleteButton.setOnClickListener { onDeleteClicked(student) }
         }
+    }
+}
+
+class StudentDiffCallback : DiffUtil.ItemCallback<Student>() {
+    override fun areItemsTheSame(oldItem: Student, newItem: Student): Boolean {
+        return oldItem.id == newItem.id
+    }
+
+    override fun areContentsTheSame(oldItem: Student, newItem: Student): Boolean {
+        return oldItem == newItem
     }
 }

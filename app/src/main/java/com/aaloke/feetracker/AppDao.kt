@@ -1,31 +1,37 @@
 package com.aaloke.feetracker
 
+import androidx.lifecycle.LiveData
 import androidx.room.*
-import kotlinx.coroutines.flow.Flow
 
 @Dao
 interface AppDao {
-    // --- Student Queries ---
-    @Insert
+    // --- NEW & UPDATED QUERIES ---
+
+    // Gets a list of unique class names for the spinner
+    @Query("SELECT DISTINCT className FROM students ORDER BY className ASC")
+    fun getDistinctClassNames(): LiveData<List<String>>
+
+    // Gets ALL students, optionally filtered by class
+    @Query("SELECT * FROM students WHERE (:className = 'All' OR className = :className) ORDER BY name ASC")
+    fun getAllStudents(className: String): LiveData<List<Student>>
+
+    // Gets students by STATUS, optionally filtered by class
+    @Query("SELECT * FROM students WHERE feeStatus = :status AND (:className = 'All' OR className = :className) ORDER BY name ASC")
+    fun getStudentsByStatusAndClass(status: String, className: String): LiveData<List<Student>>
+
+    // ---UNCHANGED FUNCTIONS ---
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertStudent(student: Student)
 
-    @Query("SELECT * FROM students ORDER BY name ASC")
-    fun getAllStudents(): Flow<List<Student>>
-    @Update
-    suspend fun updateStudent(student: Student) // <-- Add this line
+    @Delete
+    suspend fun deleteStudent(student: Student)
 
-    // --- Fee Queries ---
-    @Insert
+    @Update
+    suspend fun updateStudent(student: Student)
+
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertFee(fee: Fee)
 
     @Query("SELECT * FROM fees WHERE studentId = :studentId")
-    fun getFeesForStudent(studentId: Int): Flow<List<Fee>>
-
-    // In AppDao.kt, inside the interface
-
-    @Query("SELECT * FROM fees")
-    fun getAllFees(): Flow<List<Fee>> // <-- Add this new function
-
-    @Delete
-    suspend fun deleteStudent(student: Student) // <-- ADD THIS FUNCTION
+    fun getFeesForStudent(studentId: Int): LiveData<List<Fee>>
 }
