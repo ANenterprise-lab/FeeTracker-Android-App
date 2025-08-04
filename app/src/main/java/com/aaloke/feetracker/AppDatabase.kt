@@ -4,9 +4,12 @@ import android.content.Context
 import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
+import androidx.room.TypeConverters
 
-@Database(entities = [Student::class, Fee::class], version = 2, exportSchema = false) // Note: version is now 2
+@Database(entities = [Student::class, Payment::class], version = 4, exportSchema = false)
+@TypeConverters(Converters::class)
 abstract class AppDatabase : RoomDatabase() {
+
     abstract fun appDao(): AppDao
 
     companion object {
@@ -20,7 +23,6 @@ abstract class AppDatabase : RoomDatabase() {
                     AppDatabase::class.java,
                     "fee_tracker_database"
                 )
-                    // This handles the upgrade by deleting old data
                     .fallbackToDestructiveMigration()
                     .build()
                 INSTANCE = instance

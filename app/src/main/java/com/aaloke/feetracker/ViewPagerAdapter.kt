@@ -1,27 +1,28 @@
 package com.aaloke.feetracker
-import androidx.fragment.app.Fragment
-import androidx.fragment.app.FragmentManager
-import androidx.fragment.app.FragmentPagerAdapter
 
-class ViewPagerAdapter(fm: FragmentManager) : FragmentPagerAdapter(fm, BEHAVIOR_RESUME_ONLY_CURRENT_FRAGMENT) {
+import androidx.fragment.app.Fragment
+import androidx.fragment.app.FragmentActivity
+import androidx.viewpager2.adapter.FragmentStateAdapter
+
+class ViewPagerAdapter(activity: FragmentActivity) : FragmentStateAdapter(activity) {
 
     private val fragmentList = mutableListOf<Fragment>()
     private val fragmentTitleList = mutableListOf<String>()
 
-    override fun getItem(position: Int): Fragment {
-        return fragmentList[position]
-    }
-
-    override fun getCount(): Int {
+    override fun getItemCount(): Int {
         return fragmentList.size
     }
 
-    override fun getPageTitle(position: Int): CharSequence? {
-        return fragmentTitleList[position]
+    override fun createFragment(position: Int): Fragment {
+        return fragmentList[position]
     }
 
     fun addFragment(fragment: Fragment, title: String) {
         fragmentList.add(fragment)
         fragmentTitleList.add(title)
+    }
+
+    fun getPageTitle(position: Int): CharSequence {
+        return fragmentTitleList[position]
     }
 }

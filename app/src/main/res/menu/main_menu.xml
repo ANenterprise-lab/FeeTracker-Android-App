@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <item
+        android:id="@+id/action_reports"
+        android:icon="@drawable/ic_reports"
+        android:title="Reports"
+        app:showAsAction="ifRoom" />
+
+    <item
+        android:id="@+id/action_export"
+        android:icon="@android:drawable/ic_menu_save"
+        android:title="Export to CSV"
+        app:showAsAction="ifRoom" />
+
+    <item
+        android:id="@+id/action_settings"
+        android:icon="@drawable/ic_settings"
+        android:title="Settings"
+        app:showAsAction="ifRoom" />
+
+    <item
+        android:title="More"
+        app:showAsAction="never">
+        <menu>
+            <item
+                android:id="@+id/action_backup"
+                android:title="Backup Data" />
+            <item
+                android:id="@+id/action_restore"
+                android:title="Restore Data" />
+        </menu>
+    </item>
+</menu>

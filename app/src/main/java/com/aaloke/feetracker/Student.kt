@@ -11,7 +11,8 @@ data class Student(
     val name: String,
     val className: String,
     val feeAmount: Double,
-    // ADD THESE TWO NEW FIELDS
-    val phoneNumber: String?, // '?' makes it optional (can be empty)
-    val feeStatus: String = "Pending" // Default new students to "Pending"
+    val phoneNumber: String?,
+    val feeStatus: String = "Pending",
+    // The previous version was missing a comma after feeStatus
+    val pendingBalance: Double = feeAmount
 ) : Serializable

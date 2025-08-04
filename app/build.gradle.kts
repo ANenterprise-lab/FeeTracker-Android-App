@@ -1,7 +1,7 @@
 plugins {
     id("com.android.application")
     id("org.jetbrains.kotlin.android")
-    id("kotlin-kapt")
+    id("kotlin-kapt") // Apply the Kapt plugin
 }
 
 android {
@@ -39,20 +39,26 @@ android {
 dependencies {
     // Core Android Libraries
     implementation("androidx.core:core-ktx:1.13.1")
-    implementation("androidx.appcompat:appcompat:1.7.0")
+    implementation("androidx.appcompat:appcompat:1.6.1")
     implementation("com.google.android.material:material:1.12.0")
+    implementation("androidx.activity:activity-ktx:1.9.0")
+    implementation("androidx.constraintlayout:constraintlayout:2.1.4")
 
-    // Room Database
-    implementation("androidx.room:room-runtime:2.6.1")
-    kapt("androidx.room:room-compiler:2.6.1")
-    implementation("androidx.room:room-ktx:2.6.1")
-
-    // Lifecycle Components - THIS BLOCK FIXES YOUR ERROR
+    // Lifecycle components
     implementation("androidx.lifecycle:lifecycle-viewmodel-ktx:2.8.2")
     implementation("androidx.lifecycle:lifecycle-livedata-ktx:2.8.2")
 
+    // Room Database
+    val room_version = "2.6.1"
+    implementation("androidx.room:room-runtime:$room_version")
+    kapt("androidx.room:room-compiler:$room_version")
+    implementation("androidx.room:room-ktx:$room_version")
+
     // Other libraries
     implementation("androidx.work:work-runtime-ktx:2.9.0")
+    implementation("com.google.android.gms:play-services-ads:23.1.0")
     implementation("com.kizitonwose.calendar:view:2.5.1")
     coreLibraryDesugaring("com.android.tools:desugar_jdk_libs:2.0.4")
+    implementation("com.github.PhilJay:MPAndroidChart:v3.1.0")
+    implementation("com.google.code.gson:gson:2.10.1")
 }
