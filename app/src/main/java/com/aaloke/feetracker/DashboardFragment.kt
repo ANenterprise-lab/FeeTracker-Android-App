@@ -11,12 +11,15 @@ import com.github.mikephil.charting.charts.PieChart
 import com.github.mikephil.charting.data.PieData
 import com.github.mikephil.charting.data.PieDataSet
 import com.github.mikephil.charting.data.PieEntry
+import java.util.ArrayList
 
 class DashboardFragment : Fragment(R.layout.fragment_dashboard) {
 
     private lateinit var studentViewModel: StudentViewModel
     private lateinit var totalCollectedTextView: TextView
     private lateinit var totalPendingTextView: TextView
+    private lateinit var totalExpensesTextView: TextView
+    private lateinit var summaryTitleTextView: TextView
     private lateinit var pieChart: PieChart
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -25,39 +28,47 @@ class DashboardFragment : Fragment(R.layout.fragment_dashboard) {
         // Find all the UI elements from the layout
         totalCollectedTextView = view.findViewById(R.id.total_collected_textview)
         totalPendingTextView = view.findViewById(R.id.total_pending_textview)
+        totalExpensesTextView = view.findViewById(R.id.total_expenses_textview)
+        summaryTitleTextView = view.findViewById(R.id.summary_title_textview)
         pieChart = view.findViewById(R.id.pie_chart)
 
-        // Get the shared ViewModel
+        // Get the shared ViewModel from the Activity
         studentViewModel = ViewModelProvider(requireActivity()).get(StudentViewModel::class.java)
 
-        // Observe the data and update the UI
+        setupPieChartStyle()
         setupObservers()
-        setupPieChart()
     }
 
     private fun setupObservers() {
-        // Observe total collected amount
-        studentViewModel.totalCollected.observe(viewLifecycleOwner) { collected ->
-            totalCollectedTextView.text = String.format("Total Collected: ₹%.2f", collected ?: 0.0)
-        }
+        // Observe all data points and call a single function to update the summary
+        studentViewModel.totalCollected.observe(viewLifecycleOwner) { updateTotalSummary() }
+        studentViewModel.totalPending.observe(viewLifecycleOwner) { updateTotalSummary() }
+        studentViewModel.totalExpenses.observe(viewLifecycleOwner) { updateTotalSummary() }
 
-        // Observe total pending amount
-        studentViewModel.totalPending.observe(viewLifecycleOwner) { pending ->
-            totalPendingTextView.text = String.format("Total Pending: ₹%.2f", pending ?: 0.0)
-        }
-
-        // Observe student counts for the pie chart
+        // Observe student counts to update the pie chart
         studentViewModel.paidStudentCount.observe(viewLifecycleOwner) { updatePieChart() }
         studentViewModel.pendingStudentCount.observe(viewLifecycleOwner) { updatePieChart() }
     }
 
-    private fun setupPieChart() {
+    private fun updateTotalSummary() {
+        val collected = studentViewModel.totalCollected.value ?: 0.0
+        val pending = studentViewModel.totalPending.value ?: 0.0
+        val expenses = studentViewModel.totalExpenses.value ?: 0.0
+        val profit = collected - expenses
+
+        totalCollectedTextView.text = String.format("Fees Collected: ₹%.2f", collected)
+        totalPendingTextView.text = String.format("Fees Pending: ₹%.2f", pending)
+        totalExpensesTextView.text = String.format("Total Expenses: ₹%.2f", expenses)
+        summaryTitleTextView.text = String.format("Financial Summary (Profit: ₹%.2f)", profit)
+    }
+
+    private fun setupPieChartStyle() {
         pieChart.description.isEnabled = false
         pieChart.isDrawHoleEnabled = true
         pieChart.setHoleColor(Color.TRANSPARENT)
         pieChart.setEntryLabelColor(Color.BLACK)
         pieChart.setEntryLabelTextSize(12f)
-        pieChart.legend.isEnabled = true
+        pieChart.legend.textSize = 14f
     }
 
     private fun updatePieChart() {
@@ -65,14 +76,14 @@ class DashboardFragment : Fragment(R.layout.fragment_dashboard) {
         val pendingCount = studentViewModel.pendingStudentCount.value ?: 0
 
         if (paidCount == 0 && pendingCount == 0) {
-            pieChart.visibility = View.GONE // Hide chart if there's no data
+            pieChart.visibility = View.GONE // Hide chart if there is no data
             return
         }
         pieChart.visibility = View.VISIBLE
 
         val entries = ArrayList<PieEntry>()
-        entries.add(PieEntry(paidCount.toFloat(), "Paid"))
-        entries.add(PieEntry(pendingCount.toFloat(), "Pending"))
+        if (paidCount > 0) entries.add(PieEntry(paidCount.toFloat(), "Paid"))
+        if (pendingCount > 0) entries.add(PieEntry(pendingCount.toFloat(), "Pending"))
 
         val dataSet = PieDataSet(entries, "")
         dataSet.colors = listOf(
@@ -84,6 +95,7 @@ class DashboardFragment : Fragment(R.layout.fragment_dashboard) {
 
         val data = PieData(dataSet)
         pieChart.data = data
+        pieChart.animateY(1000) // Add a simple animation
         pieChart.invalidate() // Refresh the chart
     }
 }

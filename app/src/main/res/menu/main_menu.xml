@@ -11,6 +11,38 @@
     <item
         android:id="@+id/action_export"
         android:icon="@android:drawable/ic_menu_save"
+        android:title="Export Current View"
+        app:showAsAction="ifRoom" />
+
+    <item
+        android:id="@+id/action_more"
+        android:icon="@drawable/ic_settings"
+        android:title="More"
+        app:showAsAction="always">
+        <menu>
+            <item
+                android:id="@+id/action_expenses"
+                android:title="Track Expenses" />
+            <item
+                android:id="@+id/action_settings"
+                android:title="SMS Settings" />
+            <item
+                android:id="@+id/action_backup"
+                android:title="Backup Data" />
+            <item
+                android:id="@+id/action_restore"
+                android:title="Restore Data" />
+        </menu>
+    </item>
+    <item
+        android:id="@+id/action_reports"
+        android:icon="@drawable/ic_reports"
+        android:title="Reports"
+        app:showAsAction="ifRoom" />
+
+    <item
+        android:id="@+id/action_export"
+        android:icon="@android:drawable/ic_menu_save"
         android:title="Export to CSV"
         app:showAsAction="ifRoom" />
 
@@ -32,4 +64,11 @@
                 android:title="Restore Data" />
         </menu>
     </item>
+    <item
+        android:id="@+id/action_attendance"
+        android:title="Take Attendance" />
+    <item
+        android:id="@+id/action_expenses"
+        android:title="Track Expenses" />
+
 </menu>

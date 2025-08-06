@@ -8,40 +8,47 @@ import com.google.android.material.textfield.TextInputEditText
 
 class SettingsActivity : AppCompatActivity() {
 
+    private lateinit var institutionNameEditText: TextInputEditText
     private lateinit var smsTemplateEditText: TextInputEditText
-    private lateinit var saveTemplateButton: Button
+    private lateinit var saveButton: Button
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_settings)
+        title = "App Settings"
 
-        // Set the title for the activity
-        title = "Settings"
-
+        institutionNameEditText = findViewById(R.id.institution_name_edittext)
         smsTemplateEditText = findViewById(R.id.sms_template_edittext)
-        saveTemplateButton = findViewById(R.id.save_template_button)
+        saveButton = findViewById(R.id.save_settings_button)
 
-        // Load the currently saved template and display it
-        loadSmsTemplate()
+        loadSettings()
 
-        saveTemplateButton.setOnClickListener {
-            saveSmsTemplate()
+        saveButton.setOnClickListener {
+            saveSettings()
         }
     }
 
-    private fun loadSmsTemplate() {
+    private fun loadSettings() {
+        // Load and display the current institution name
+        val currentName = SettingsManager.getInstitutionName(this)
+        institutionNameEditText.setText(currentName)
+
+        // Load and display the current SMS template
         val currentTemplate = SettingsManager.getSmsTemplate(this)
         smsTemplateEditText.setText(currentTemplate)
     }
 
-    private fun saveSmsTemplate() {
+    private fun saveSettings() {
+        val newName = institutionNameEditText.text.toString().trim()
         val newTemplate = smsTemplateEditText.text.toString().trim()
-        if (newTemplate.isNotEmpty()) {
+
+        if (newName.isNotEmpty() && newTemplate.isNotEmpty()) {
+            SettingsManager.setInstitutionName(this, newName)
             SettingsManager.setSmsTemplate(this, newTemplate)
-            Toast.makeText(this, "Template saved successfully!", Toast.LENGTH_SHORT).show()
+            Toast.makeText(this, "Settings saved successfully!", Toast.LENGTH_SHORT).show()
             finish() // Close the settings screen after saving
         } else {
-            Toast.makeText(this, "Template cannot be empty.", Toast.LENGTH_SHORT).show()
+            Toast.makeText(this, "Fields cannot be empty.", Toast.LENGTH_SHORT).show()
         }
     }
 }

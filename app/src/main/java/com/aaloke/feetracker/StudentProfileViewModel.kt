@@ -3,26 +3,29 @@ package com.aaloke.feetracker
 import android.app.Application
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
-import androidx.lifecycle.SavedStateHandle
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.asLiveData
-import kotlinx.coroutines.flow.flatMapLatest
 
-// No more factory needed!
-class StudentProfileViewModel(application: Application, private val savedStateHandle: SavedStateHandle) : AndroidViewModel(application) {
+class StudentProfileViewModel(application: Application, studentId: Int) : AndroidViewModel(application) {
 
     private val repository: AppRepository
-
-    // Get the student ID safely from the saved state handle
-    private val studentIdFlow = savedStateHandle.getStateFlow("studentId", 0)
+    val paymentHistory: LiveData<List<Payment>>
 
     init {
         val appDao = AppDatabase.getDatabase(application).appDao()
         repository = AppRepository(appDao)
+        paymentHistory = repository.getPaymentsForStudent(studentId).asLiveData()
     }
+}
 
-    // The payment history will automatically update if the student ID ever changes
-    @OptIn(kotlinx.coroutines.ExperimentalCoroutinesApi::class)
-    val paymentHistory: LiveData<List<Payment>> = studentIdFlow.flatMapLatest { studentId ->
-        repository.getPaymentsForStudent(studentId)
-    }.asLiveData()
+// This Factory is required to pass the studentId to the ViewModel
+class StudentProfileViewModelFactory(private val application: Application, private val studentId: Int) : ViewModelProvider.Factory {
+    override fun <T : ViewModel> create(modelClass: Class<T>): T {
+        if (modelClass.isAssignableFrom(StudentProfileViewModel::class.java)) {
+            @Suppress("UNCHECKED_CAST")
+            return StudentProfileViewModel(application, studentId) as T
+        }
+        throw IllegalArgumentException("Unknown ViewModel class")
+    }
 }

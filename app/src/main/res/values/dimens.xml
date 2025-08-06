@@ -1,0 +1,5 @@
+<resources>
+    <dimen name="fab_margin_1">80dp</dimen>
+    <dimen name="fab_margin_2">150dp</dimen>
+    <dimen name="fab_margin_3">220dp</dimen>
+</resources>

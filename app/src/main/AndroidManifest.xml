@@ -4,9 +4,9 @@
 
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.SEND_SMS" />
-
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" android:maxSdkVersion="28" />
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" android:maxSdkVersion="28" />
+
 
     <application
         android:allowBackup="true"
@@ -31,11 +31,18 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+        <activity
+            android:name=".BatchesActivity"
+            android:exported="false" />
 
-        <activity android:name=".StudentProfileActivity" />
         <activity android:name=".StudentDetailsActivity" />
-        <activity android:name=".CalendarActivity" />
-        <activity android:name=".NotificationActivity" />
+        <activity android:name=".StudentProfileActivity" />
+        <activity android:name=".SettingsActivity" />
+        <activity android:name=".ReportsActivity" />
+
+        <activity android:name=".ExpensesActivity" />
+
+        <activity android:name=".AttendanceActivity" />
 
         <provider
             android:name="androidx.core.content.FileProvider"
@@ -46,12 +53,6 @@
                 android:name="android.support.FILE_PROVIDER_PATHS"
                 android:resource="@xml/provider_paths" />
         </provider>
-
-        <activity android:name=".StudentProfileActivity" />
-
-        <activity android:name=".SettingsActivity" />
-        <activity android:name=".SettingsActivity" />
-        <activity android:name=".ReportsActivity" />
 
     </application>
 

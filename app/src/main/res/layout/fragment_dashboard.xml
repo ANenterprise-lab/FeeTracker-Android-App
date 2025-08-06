@@ -27,9 +27,10 @@
                 android:padding="16dp">
 
                 <TextView
+                    android:id="@+id/summary_title_textview"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Monthly Summary"
+                    android:text="Financial Summary"
                     android:textSize="20sp"
                     android:textStyle="bold"/>
 
@@ -39,7 +40,7 @@
                     android:layout_height="wrap_content"
                     android:layout_marginTop="12dp"
                     android:textSize="18sp"
-                    tools:text="Total Collected: ₹5,000.00"/>
+                    tools:text="Fees Collected: ₹5,000.00"/>
 
                 <TextView
                     android:id="@+id/total_pending_textview"
@@ -47,7 +48,15 @@
                     android:layout_height="wrap_content"
                     android:layout_marginTop="8dp"
                     android:textSize="18sp"
-                    tools:text="Total Pending: ₹1,200.00"/>
+                    tools:text="Fees Pending: ₹1,200.00"/>
+
+                <TextView
+                    android:id="@+id/total_expenses_textview"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="8dp"
+                    android:textSize="18sp"
+                    tools:text="Total Expenses: ₹800.00"/>
 
             </LinearLayout>
         </com.google.android.material.card.MaterialCardView>

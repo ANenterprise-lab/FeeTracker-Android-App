@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <item
+        android:id="@+id/action_pay_selected"
+        android:icon="@drawable/ic_payment"
+        android:title="Mark as Paid"
+        app:showAsAction="ifRoom" />
+
+    <item
+        android:id="@+id/action_delete_selected"
+        android:icon="@android:drawable/ic_menu_delete"
+        android:title="Delete Selected"
+        app:showAsAction="ifRoom" />
+
+</menu>
